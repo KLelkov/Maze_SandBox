@@ -26,7 +26,6 @@ namespace Maze_SandBox
                                 new Point(1, 0)     // 0 - up; 1 - left
                              };                     // 2 - down; 3 - right
 
-        enum step_phase { Start, Walk, Hunt };
 
 
         public Form1()
@@ -66,9 +65,9 @@ namespace Maze_SandBox
             if (maze[i, j].get_side(3) == 1)
                 g.FillRectangle(filler, x + size, y - 2, 1, size + 3);
 
-
             // --- specific marker drawing
-            switch (maze[i, j].get_rank())
+            int rank = maze[i, j].get_rank();
+            switch (rank)
             {
                 case 0:
                     break;
@@ -92,17 +91,31 @@ namespace Maze_SandBox
                     filler = new SolidBrush(SetTransparency(64, Color.Red));
                     g.FillRectangle(filler, x + size / 2 - size / 10, y + size / 2 - size / 10, size / 5, size / 5);
                     break;
-                case 6: // Tremo visited cell
-                    pencil = new Pen(Color.Blue);
+                case 6: // Hunt & Kill not-finished cell marker
+                    pencil = new Pen(Color.SkyBlue);
                     g.DrawRectangle(pencil, x + size / 2 - size / 10, y + size / 2 - size / 10, size / 5, size / 5);
                     break;
                 case 7: // Tremo/Hunt & Kill current cell marker
                     filler = new SolidBrush(SetTransparency(64, Color.Green));
                     g.FillRectangle(filler, x + size / 2 - size / 4, y + size / 2 - size / 4, size / 2, size / 2);
                     break;
-                case 8: // Hunt & Kill not-finished cell marker
-                    pencil = new Pen(Color.SkyBlue);
-                    g.DrawRectangle(pencil, x + size / 2 - size / 10, y + size / 2 - size / 10, size / 5, size / 5);
+                case 8: // Tremo <Spectral> solution levels
+                case 9: // Tremo <Classic> visited cell marker
+                case 10:
+                case 11:
+                    filler = new SolidBrush(SetTransparency(255 - 80*(rank - 8), Color.SkyBlue));
+                    g.FillRectangle(filler, x + size / 2 - size / 4, y + size / 2 - size / 4, size / 2, size / 2);
+                    break;
+                case 12:// Tremo <Spectral> Shortest path levels
+                case 13:
+                case 14:
+                case 15:
+                    if (rank > 12)
+                        rank = 13;
+                    filler = new SolidBrush(SetTransparency(255 - 200 * (rank - 12), Color.OrangeRed));
+                    g.FillRectangle(filler, x + size / 2 - size / 4, y + size / 2 - size / 4, size / 2, size / 2);
+                    break;
+                default:
                     break;
             }
         }
@@ -283,37 +296,87 @@ namespace Maze_SandBox
                 draw();
 
             statusLabel.Text = generateBox.SelectedItem.ToString();
-            if (optionsBox.SelectedItem != null)
-                statusLabel.Text += " <" + optionsBox.SelectedItem.ToString() + ">";
+            if (optionsBox1.SelectedItem != null)
+                statusLabel.Text += " <" + optionsBox1.SelectedItem.ToString() + ">";
             statusLabel.Text += ": time elapsed " + disp + " seconds.";
 
         }
 
         private void generateBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            optionsBox.Items.Clear();
+            optionsBox1.Items.Clear();
             switch (generateBox.SelectedItem.ToString())
             {
                 case "Hunt and Kill algorithm":
                     break;
                 case "Walking Man algorithm":
-                    optionsBox.Items.Add("Newest");
-                    optionsBox.Items.Add("Random");
+                    optionsBox1.Items.Add("Newest");
+                    optionsBox1.Items.Add("Random");
                     //optionsBox.Items.Add("Newest/Random, 50/50 split");
-                    optionsBox.SelectedIndex = 0;
+                    optionsBox1.SelectedIndex = 0;
                     break;
                 case "Growing Tree algorithm":
-                    optionsBox.Items.Add("Newest (Backtracker)");
-                    optionsBox.Items.Add("Random (Prim's)");
-                    optionsBox.Items.Add("One of the newest");
-                    optionsBox.Items.Add("Newest/Random, 75/25 split");
-                    optionsBox.Items.Add("Newest/Random, 50/50 split");
-                    optionsBox.Items.Add("Newest/Random, 25/75 split");
-                    optionsBox.Items.Add("Middle");
-                    optionsBox.Items.Add("Oldest");
-                    optionsBox.SelectedIndex = 0;
+                    optionsBox1.Items.Add("Newest (Backtracker)");
+                    optionsBox1.Items.Add("Random (Prim's)");
+                    optionsBox1.Items.Add("One of the newest");
+                    optionsBox1.Items.Add("Newest/Random, 75/25 split");
+                    optionsBox1.Items.Add("Newest/Random, 50/50 split");
+                    optionsBox1.Items.Add("Newest/Random, 25/75 split");
+                    optionsBox1.Items.Add("Middle");
+                    optionsBox1.Items.Add("Oldest");
+                    optionsBox1.SelectedIndex = 0;
                     break;
 
+            }
+        }
+
+        private void solve_button_Click(object sender, EventArgs e)
+        {
+            if (!selectCheckBox.Checked)
+            {
+                exit_location.X = lenght_x - 1;
+                exit_location.Y = lenght_y - 1;
+            }
+            parameters_init();
+            maze_update();
+            maze[0, 0].set_rank(2);
+
+            maze[exit_location.X, exit_location.Y].set_rank(3);
+            current_position = new Point();
+            draw_cell(0, 0);
+            draw_cell(exit_location);
+            int delay_solve = Convert.ToInt32(delayBox3.Text);
+            System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
+            timer.Start();
+            switch (solveBox.SelectedItem.ToString())
+            {
+                case "Wave solution":
+                    //exit_found = Solve_Wave(delay_solve);
+                    break;
+                case "Tremo solution":
+                    Solve_Tremo(delay_solve);
+                    if (!animationCheckBox.Checked)
+                        draw();
+                    break;
+            }
+            timer.Stop();
+            double disp = timer.ElapsedMilliseconds / 1000F;
+            //MessageBox.Show("Time elapsed: " + disp + " seconds.");
+            statusLabel.Text = solveBox.SelectedItem.ToString() + ": time elapsed " + disp + " seconds.";
+        }
+
+        private void solveBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            optionsBox2.Items.Clear();
+            switch (solveBox.SelectedItem.ToString())
+            {
+                case "Wave solution":
+                    break;
+                case "Tremo solution":
+                    optionsBox2.Items.Add("Shortest path");
+                    optionsBox2.Items.Add("Classic");
+                    optionsBox2.SelectedIndex = 0;
+                    break;
             }
         }
 
@@ -355,7 +418,7 @@ namespace Maze_SandBox
                 {
                     System.Threading.Thread.Sleep(delay);
                     maze[current_position.X, current_position.Y].visited = true;
-                    maze[current_position.X, current_position.Y].set_rank(8);
+                    maze[current_position.X, current_position.Y].set_rank(6);
                     
                     bit_counter = new byte[4];
                     sum = 0;
@@ -486,7 +549,7 @@ namespace Maze_SandBox
             int sum = 0;
             bool step_done = false;
             bool gen_complete = false;
-            string generation_options = optionsBox.SelectedItem.ToString();
+            string generation_options = optionsBox1.SelectedItem.ToString();
             byte[] bit_counter = new byte[4]; // used to store information about blicked directions
             // "1" - direction is blocked; "0" - direction is free to go
             
@@ -612,7 +675,7 @@ namespace Maze_SandBox
             int sum = 0;
             bool step_done = false;
             bool gen_complete = false;
-            string generation_options = optionsBox.SelectedItem.ToString();
+            string generation_options = optionsBox1.SelectedItem.ToString();
             byte[] bit_counter = new byte[4]; // used to store information about blicked directions
             // "1" - direction is blocked; "0" - direction is free to go
 
@@ -808,12 +871,154 @@ namespace Maze_SandBox
                 
             
         }
+
+        private void Solve_Tremo(int delay = 0)
+        {
+            bool step_done = false;
+            bool exit_found = false;
+            int step;
+            Point ghost_step = new Point();
+            byte[] bit_counter = new byte[4];
+            string solving_options = optionsBox2.SelectedItem.ToString();
+            int ban_way = 8; // first run - not banning any way
+
+            while (!exit_found)
+            {
+                System.Threading.Thread.Sleep(delay);
+                step = maze[current_position.X, current_position.Y].get_rank();
+                // This part will work as a visits counter.
+                // Every time you return to previusly visited cell - it's rank
+                // increments, starting from 10 (10 - one visit; 11 - two visits etc.)
+                if ((step != 2) && (step != 3))
+                {
+                    if (step != 0)
+                        maze[current_position.X, current_position.Y].set_rank(++step);
+                    else
+                    {
+                        maze[current_position.X, current_position.Y].set_rank(8);
+                    }
+                }
+
+                if (animationCheckBox.Checked)
+                    draw_cell(current_position);
+
+                for (int i = 0; i < 4; i++) // counting number of walls for the current cell
+                    bit_counter[i] = maze[current_position.X, current_position.Y].get_side(i);
+
+                if (step == 3)      // "step" still hold the rank of the current cell
+                {
+                    exit_found = true; // if current position is exit cell
+                    break;
+                }               
+
+                step_done = false;
+                if (ban_way >= 0 && ban_way < 4)
+                    step = all_steps[ban_way + 1];
+                else
+                    step = 0;
+                while (!step_done)
+                {
+                    if ((bit_counter[step] != 1)) // and see if its free
+                    {
+                        ghost_step.X = current_position.X + step_maker[step].X; // ghost to the next cell
+                        ghost_step.Y = current_position.Y + step_maker[step].Y; // and see if you crossed maze edge
+                        if ((ghost_step.X >= 0) && (ghost_step.X < lenght_x) && (ghost_step.Y >= 0) && (ghost_step.Y < lenght_y))
+                        {
+                            if (maze[ghost_step.X, ghost_step.Y].get_side(all_steps[step + 2]) == 1)
+                                bit_counter[step] = 1; // if ghosted cell has this way wall blocked - block this way
+                            // THIS AINT SUPPOSED TO HAPPEN, JUST IN CASE
+                            else if (maze[ghost_step.X, ghost_step.Y].get_rank() == 3) // if ghosted cell is the finish
+                            {
+                                current_position = ghost_step;
+                                step_done = true;
+                                ban_way = all_steps[step + 2];  // block the way back
+                                if (animationCheckBox.Checked)
+                                    draw_cell(current_position);
+                                exit_found = true;    //  indicates when maze is solved
+                            }
+                            else // if ghosted cell is free to go
+                            {
+                                current_position = ghost_step;
+                                step_done = true;
+                                ban_way = all_steps[step + 2]; // block the way back and repeat whole thing for the new position
+                            }
+                        }
+                    }
+                    if (!step_done)
+                        step = all_steps[step + 1];
+                }
+
+                if (animationCheckBox.Checked)
+                    draw_cell(current_position);
+            }
+            // --- Find shortest path among recieved solution
+            if (solving_options == "Shortest path")
+            {
+                current_position = new Point();
+                exit_found = false;
+                int min_rank;
+                int min_index;
+                while (!exit_found)
+                {
+                    min_rank = 99; // effective rank cant be greater than 4
+                    min_index = 99; // accessable index cannot be greater than 3
+                    ban_way = 99;   // realistic block way value cannot be greater than 3
+                    bit_counter = new byte[4];
+                    step = maze[current_position.X, current_position.Y].get_rank();
+                    if ((step != 2) && (step != 3))
+                    {
+                        if ((step < 12))
+                            maze[current_position.X, current_position.Y].set_rank(12);
+                        else
+                            maze[current_position.X, current_position.Y].set_rank(++step);
+                    }
+
+                    for (int i = 3; i >= 0; i--)
+                    {
+                        bit_counter[i] = maze[current_position.X, current_position.Y].get_side(i);
+                        if (bit_counter[i] == 0)
+                        {
+                            ghost_step.X = current_position.X + step_maker[i].X;
+                            ghost_step.Y = current_position.Y + step_maker[i].Y;
+                            step = maze[ghost_step.X, ghost_step.Y].get_rank();
+                            if ((step < 8)||(step == 2) || (step == 3)) // it turns true as soo as "step" < 8
+                            {                                           // other conditions are just for
+                                if (step == 3)                          // better code understanding
+                                {
+                                    exit_found = true;
+                                    break;
+                                }
+                                if (step == 2)
+                                    ban_way = i;
+                            }
+                            else
+                            {
+                                step -= 8;
+                                if (step < min_rank)
+                                {
+                                    min_rank = step;
+                                    min_index = i;
+                                }
+                            }
+                        }
+                    }
+                    if (min_index == 99)
+                        min_index = ban_way;
+                    draw_cell(current_position);
+                    if (!exit_found)
+                    {
+                        current_position.X = current_position.X + step_maker[min_index].X;
+                        current_position.Y = current_position.Y + step_maker[min_index].Y;
+                    }
+                }
+            }
+        }
 }
 
 
     class cell
     {
-        int[] sides = new int[4]; // 0 - free side; 1 - wall side
+        byte[] sides = new byte[4]; // 0 - free side; 1 - wall side
         public bool visited = false;       // indicates if this cell was already visited
         int rank = 0;             // additional user info. Used ot mark specific cells
         public cell()
@@ -827,11 +1032,11 @@ namespace Maze_SandBox
         {
             rank = source;
         }
-        public void set_side(int num, int free = 1)
+        public void set_side(int num, byte free = 1)
         {
             sides[num] = free;
         }
-        public int get_side(int num)
+        public byte get_side(int num)
         {
             return sides[num];
         }

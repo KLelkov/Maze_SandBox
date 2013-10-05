@@ -30,13 +30,13 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.controlPanel = new System.Windows.Forms.Panel();
-            this.optionsBox = new System.Windows.Forms.ComboBox();
+            this.optionsBox2 = new System.Windows.Forms.ComboBox();
+            this.optionsBox1 = new System.Windows.Forms.ComboBox();
             this.optionsLabel = new System.Windows.Forms.Label();
             this.propertiesLabel = new System.Windows.Forms.Label();
             this.selectCheckBox = new System.Windows.Forms.CheckBox();
             this.generateBox = new System.Windows.Forms.ComboBox();
             this.solveBox = new System.Windows.Forms.ComboBox();
-            this.step_button = new System.Windows.Forms.Button();
             this.generate_button = new System.Windows.Forms.Button();
             this.mazeSizeLabel = new System.Windows.Forms.Label();
             this.mazeSizeBox = new System.Windows.Forms.TextBox();
@@ -60,13 +60,13 @@
             // 
             // controlPanel
             // 
-            this.controlPanel.Controls.Add(this.optionsBox);
+            this.controlPanel.Controls.Add(this.optionsBox2);
+            this.controlPanel.Controls.Add(this.optionsBox1);
             this.controlPanel.Controls.Add(this.optionsLabel);
             this.controlPanel.Controls.Add(this.propertiesLabel);
             this.controlPanel.Controls.Add(this.selectCheckBox);
             this.controlPanel.Controls.Add(this.generateBox);
             this.controlPanel.Controls.Add(this.solveBox);
-            this.controlPanel.Controls.Add(this.step_button);
             this.controlPanel.Controls.Add(this.generate_button);
             this.controlPanel.Controls.Add(this.mazeSizeLabel);
             this.controlPanel.Controls.Add(this.mazeSizeBox);
@@ -87,19 +87,31 @@
             this.controlPanel.Size = new System.Drawing.Size(205, 658);
             this.controlPanel.TabIndex = 22;
             // 
-            // optionsBox
+            // optionsBox2
             // 
-            this.optionsBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.optionsBox.FormattingEnabled = true;
-            this.optionsBox.Location = new System.Drawing.Point(13, 154);
-            this.optionsBox.Name = "optionsBox";
-            this.optionsBox.Size = new System.Drawing.Size(185, 21);
-            this.optionsBox.TabIndex = 34;
+            this.optionsBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.optionsBox2.FormattingEnabled = true;
+            this.optionsBox2.Items.AddRange(new object[] {
+            "Wave solution",
+            "Tremo solution"});
+            this.optionsBox2.Location = new System.Drawing.Point(13, 336);
+            this.optionsBox2.Name = "optionsBox2";
+            this.optionsBox2.Size = new System.Drawing.Size(185, 21);
+            this.optionsBox2.TabIndex = 35;
+            // 
+            // optionsBox1
+            // 
+            this.optionsBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.optionsBox1.FormattingEnabled = true;
+            this.optionsBox1.Location = new System.Drawing.Point(13, 154);
+            this.optionsBox1.Name = "optionsBox1";
+            this.optionsBox1.Size = new System.Drawing.Size(185, 21);
+            this.optionsBox1.TabIndex = 34;
             // 
             // optionsLabel
             // 
             this.optionsLabel.Font = new System.Drawing.Font("Comic Sans MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.optionsLabel.Location = new System.Drawing.Point(13, 351);
+            this.optionsLabel.Location = new System.Drawing.Point(13, 396);
             this.optionsLabel.Name = "optionsLabel";
             this.optionsLabel.Size = new System.Drawing.Size(185, 23);
             this.optionsLabel.TabIndex = 33;
@@ -154,16 +166,7 @@
             this.solveBox.Name = "solveBox";
             this.solveBox.Size = new System.Drawing.Size(185, 21);
             this.solveBox.TabIndex = 23;
-            // 
-            // step_button
-            // 
-            this.step_button.Font = new System.Drawing.Font("Comic Sans MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.step_button.Location = new System.Drawing.Point(13, 377);
-            this.step_button.Name = "step_button";
-            this.step_button.Size = new System.Drawing.Size(185, 35);
-            this.step_button.TabIndex = 2;
-            this.step_button.Text = "Generation step";
-            this.step_button.UseVisualStyleBackColor = true;
+            this.solveBox.SelectedIndexChanged += new System.EventHandler(this.solveBox_SelectedIndexChanged);
             // 
             // generate_button
             // 
@@ -249,6 +252,7 @@
             this.solve_button.TabIndex = 3;
             this.solve_button.Text = "Solve";
             this.solve_button.UseVisualStyleBackColor = true;
+            this.solve_button.Click += new System.EventHandler(this.solve_button_Click);
             // 
             // delayBox2
             // 
@@ -367,13 +371,12 @@
         #endregion
 
         private System.Windows.Forms.Panel controlPanel;
-        private System.Windows.Forms.ComboBox optionsBox;
+        private System.Windows.Forms.ComboBox optionsBox1;
         private System.Windows.Forms.Label optionsLabel;
         private System.Windows.Forms.Label propertiesLabel;
         private System.Windows.Forms.CheckBox selectCheckBox;
         private System.Windows.Forms.ComboBox generateBox;
         private System.Windows.Forms.ComboBox solveBox;
-        private System.Windows.Forms.Button step_button;
         private System.Windows.Forms.Button generate_button;
         private System.Windows.Forms.Label mazeSizeLabel;
         private System.Windows.Forms.TextBox mazeSizeBox;
@@ -391,6 +394,7 @@
         private System.Windows.Forms.TextBox cellSizeBox;
         private System.Windows.Forms.StatusStrip statusStrip;
         private System.Windows.Forms.ToolStripStatusLabel statusLabel;
+        private System.Windows.Forms.ComboBox optionsBox2;
     }
 }
 
