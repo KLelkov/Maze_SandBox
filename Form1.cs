@@ -12,8 +12,8 @@ namespace Maze_SandBox
     public partial class Form1 : Form
     {
         System.Drawing.Graphics g;
-        int lenght_x = 15;
-        int lenght_y = 15;
+        int length_x = 15;
+        int length_y = 15;
         int size = 35;
         cell[,] maze;
         Point current_position;
@@ -41,9 +41,9 @@ namespace Maze_SandBox
         private void draw_cell(int i, int j)
         {
             if (j < 0)
-                j = lenght_y - 1;
+                j = length_y - 1;
             if (i < 0)
-                i = lenght_x - 1;
+                i = length_x - 1;
             g = this.CreateGraphics();
             int x = size * i + i*2 + 2;
             int y = size * j + j*2 + 2;
@@ -83,7 +83,7 @@ namespace Maze_SandBox
                     pencil = new Pen(Color.Orange);
                     g.DrawRectangle(pencil, x + size / 2 - size / 4, y + size / 2 - size / 4, size / 2, size / 2);
                     break;
-                case 4: // wave visited cell
+                case 4: // wave covered cell
                     pencil = new Pen(Color.YellowGreen);
                     g.DrawRectangle(pencil, x + size / 2 - size / 10, y + size / 2 - size / 10, size / 5, size / 5);
                     break;
@@ -112,8 +112,8 @@ namespace Maze_SandBox
                 case 15:
                     if (rank > 12)
                         rank = 13;
-                    filler = new SolidBrush(SetTransparency(255 - 200 * (rank - 12), Color.OrangeRed));
-                    g.FillRectangle(filler, x + size / 2 - size / 4, y + size / 2 - size / 4, size / 2, size / 2);
+                    filler = new SolidBrush(SetTransparency(255 - 200 * (rank - 12), Color.Red));
+                    g.FillRectangle(filler, x + size / 2 - size / 10, y + size / 2 - size / 10, size / 5, size / 5);
                     break;
                 default:
                     break;
@@ -130,9 +130,9 @@ namespace Maze_SandBox
             g = this.CreateGraphics();
             SolidBrush filler = new SolidBrush(this.BackColor);
             // clear whole line
-            g.FillRectangle(filler, 0, (size + 2) * j + 2, lenght_x * (size + 2) + 2, size);
+            g.FillRectangle(filler, 0, (size + 2) * j + 2, length_x * (size + 2) + 2, size);
             // redraw all cells one by one
-            for (int i = 0; i < lenght_x; i++)
+            for (int i = 0; i < length_x; i++)
                 draw_cell(i, j);
         }
 
@@ -140,25 +140,25 @@ namespace Maze_SandBox
         {
             g = this.CreateGraphics();
             SolidBrush filler = new SolidBrush(this.BackColor);
-            g.FillRectangle(filler, 0, 0, lenght_x * (size + 2) + 2, lenght_y * (size + 2) + 2);
-            for (int i = 0; i < lenght_x; i++)
-                for (int j = 0; j < lenght_y; j++)
+            g.FillRectangle(filler, 0, 0, length_x * (size + 2) + 2, length_y * (size + 2) + 2);
+            for (int i = 0; i < length_x; i++)
+                for (int j = 0; j < length_y; j++)
                     draw_cell(i, j);
         }
 
         private void maze_update()
         {
-            for (int j = 0; j < lenght_y; j++)
-                for (int i = 0; i < lenght_x; i++)
+            for (int j = 0; j < length_y; j++)
+                for (int i = 0; i < length_x; i++)
                 {
                     maze[i, j].set_rank(0);
-                    if (i < lenght_x - 1)
+                    if (i < length_x - 1)
                         if (maze[i + 1, j].get_side(1) == 1)
                             maze[i, j].set_side(3);
                     if (i > 0)
                         if (maze[i - 1, j].get_side(3) == 1)
                             maze[i, j].set_side(1);
-                    if (j < lenght_y - 1)
+                    if (j < length_y - 1)
                         if (maze[i, j + 1].get_side(0) == 1)
                             maze[i, j].set_side(2);
                     if (j > 0)
@@ -174,19 +174,19 @@ namespace Maze_SandBox
         {
             if (g != null)
                 g.Clear(this.BackColor);
-            maze = new cell[lenght_x, lenght_y];
+            maze = new cell[length_x, length_y];
 
-            for (int i = 0; i < lenght_x; i++)
-                for (int j = 0; j < lenght_y; j++)
+            for (int i = 0; i < length_x; i++)
+                for (int j = 0; j < length_y; j++)
                 {
                     maze[i, j] = new cell();
                     if (j == 0)
                         maze[i, j].set_side(0);
                     if (i == 0)
                         maze[i, j].set_side(1);
-                    if (j == lenght_y - 1)
+                    if (j == length_y - 1)
                         maze[i, j].set_side(2);
-                    if (i == lenght_x - 1)
+                    if (i == length_x - 1)
                         maze[i, j].set_side(3);
                 }
             draw();
@@ -195,12 +195,12 @@ namespace Maze_SandBox
         private void parameters_init()
         {
             size = Convert.ToInt32(cellSizeBox.Text);
-            lenght_x = (this.Width - 220 - 10) / (size+2);
-            lenght_y = (this.Height - 60) / (size+2);
+            length_x = (this.Width - 220 - 10) / (size+2);
+            length_y = (this.Height - 60) / (size+2);
             if ((exit_location.X == 0) && (exit_location.Y == 0))
             {
-                exit_location.X = lenght_x - 1;
-                exit_location.Y = lenght_y - 1;
+                exit_location.X = length_x - 1;
+                exit_location.Y = length_y - 1;
             }
         }
 
@@ -224,13 +224,13 @@ namespace Maze_SandBox
         {
             if (selectCheckBox.Checked)
             {
-                if ((exit_location.X >= lenght_x) || (exit_location.Y >= lenght_y))
+                if ((exit_location.X >= length_x) || (exit_location.Y >= length_y))
                     exit_location.X = exit_location.Y = 0;
                 maze[exit_location.X, exit_location.Y].set_rank(0);
                 draw_cell(exit_location.X, exit_location.Y);
-                exit_location.X = e.X / size;
-                exit_location.Y = e.Y / size;
-                if ((exit_location.X < lenght_x) && (exit_location.Y < lenght_y))
+                exit_location.X = e.X / (size + 2);
+                exit_location.Y = e.Y / (size + 2);
+                if ((exit_location.X < length_x) && (exit_location.Y < length_y))
                 {
                     maze[exit_location.X, exit_location.Y].set_rank(3);
                     draw_cell(exit_location.X, exit_location.Y);
@@ -271,8 +271,8 @@ namespace Maze_SandBox
         private void generate_button_Click(object sender, EventArgs e)
         {
             Random rnd = new Random();
-            current_position.X = rnd.Next(0, lenght_x); // random starting point
-            current_position.Y = rnd.Next(0, lenght_y); // for maze generation
+            current_position.X = rnd.Next(0, length_x); // random starting point
+            current_position.Y = rnd.Next(0, length_y); // for maze generation
             parameters_init();
             maze_init();
             int delay_gen = Convert.ToInt32(delayBox2.Text);
@@ -334,8 +334,8 @@ namespace Maze_SandBox
         {
             if (!selectCheckBox.Checked)
             {
-                exit_location.X = lenght_x - 1;
-                exit_location.Y = lenght_y - 1;
+                exit_location.X = length_x - 1;
+                exit_location.Y = length_y - 1;
             }
             parameters_init();
             maze_update();
@@ -351,7 +351,7 @@ namespace Maze_SandBox
             switch (solveBox.SelectedItem.ToString())
             {
                 case "Wave solution":
-                    //exit_found = Solve_Wave(delay_solve);
+                    Solve_Wave(delay_solve);
                     break;
                 case "Tremo solution":
                     Solve_Tremo(delay_solve);
@@ -362,7 +362,10 @@ namespace Maze_SandBox
             timer.Stop();
             double disp = timer.ElapsedMilliseconds / 1000F;
             //MessageBox.Show("Time elapsed: " + disp + " seconds.");
-            statusLabel.Text = solveBox.SelectedItem.ToString() + ": time elapsed " + disp + " seconds.";
+            statusLabel.Text = solveBox.SelectedItem.ToString();
+            if (optionsBox2.SelectedItem != null)
+                statusLabel.Text += " <" + optionsBox2.SelectedItem.ToString() + ">";
+            statusLabel.Text += ": time elapsed " + disp + " seconds.";
         }
 
         private void solveBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -383,7 +386,7 @@ namespace Maze_SandBox
         private void textBox_TextChanged(object sender, EventArgs e)
         {
             parameters_init();
-            mazeSizeBox.Text = lenght_x + "x" + lenght_y + " = " + lenght_x * lenght_y;
+            mazeSizeBox.Text = length_x + "x" + length_y + " = " + length_x * length_y;
         }
 
         private void selectCheckBox_Click(object sender, EventArgs e)
@@ -427,7 +430,7 @@ namespace Maze_SandBox
                         ghost_step.X = current_position.X + step_maker[t].X;
                         ghost_step.Y = current_position.Y + step_maker[t].Y;
                         // set up walls to every nearby visited cells, except for the way back
-                        if ((ghost_step.X >= 0) && (ghost_step.X < lenght_x) && (ghost_step.Y >= 0) && (ghost_step.Y < lenght_y))
+                        if ((ghost_step.X >= 0) && (ghost_step.X < length_x) && (ghost_step.Y >= 0) && (ghost_step.Y < length_y))
                         {
                             if (maze[ghost_step.X, ghost_step.Y].visited)
                             {
@@ -446,7 +449,7 @@ namespace Maze_SandBox
                         step = rnd.Next(0, 4);
                         ghost_step.X = current_position.X + step_maker[step].X;
                         ghost_step.Y = current_position.Y + step_maker[step].Y;
-                        if ((ghost_step.X >= 0) && (ghost_step.X < lenght_x) && (ghost_step.Y >= 0) && (ghost_step.Y < lenght_y) &&
+                        if ((ghost_step.X >= 0) && (ghost_step.X < length_x) && (ghost_step.Y >= 0) && (ghost_step.Y < length_y) &&
                             maze[ghost_step.X, ghost_step.Y].visited)
                         {
                             maze[current_position.X, current_position.Y].set_side(step, 0);
@@ -482,7 +485,7 @@ namespace Maze_SandBox
                 }
                 // --- HUNT
                 found = false;
-                for (int j = extra_lines; j < lenght_y; j++)
+                for (int j = extra_lines; j < length_y; j++)
                 {
                     System.Threading.Thread.Sleep(delay*2);
                     if (animationCheckBox.Checked)
@@ -490,9 +493,9 @@ namespace Maze_SandBox
                         if (j > 0)
                             draw_line(j - 1);
                         paint = new SolidBrush(SetTransparency(32, Color.LightGreen));
-                        g.FillRectangle(paint, size / 4, (size + 2) * j + 2 + size / 8, lenght_x * (size + 2) - size / 2, 3 * size / 4);
+                        g.FillRectangle(paint, size / 4, (size + 2) * j + 2 + size / 8, length_x * (size + 2) - size / 2, 3 * size / 4);
                     }
-                    for (int i = 0; i < lenght_x; i++)
+                    for (int i = 0; i < length_x; i++)
                     {
                         if (!maze[i, j].visited)
                         {
@@ -501,17 +504,17 @@ namespace Maze_SandBox
                             {
                                 ghost_step.X = current_position.X + step_maker[t].X;
                                 ghost_step.Y = current_position.Y + step_maker[t].Y;
-                                if ((ghost_step.X >= 0) && (ghost_step.X < lenght_x) && (ghost_step.Y >= 0) && (ghost_step.Y < lenght_y) &&
+                                if ((ghost_step.X >= 0) && (ghost_step.X < length_x) && (ghost_step.Y >= 0) && (ghost_step.Y < length_y) &&
                                     maze[ghost_step.X, ghost_step.Y].visited)
                                 {
                                     found = true;
-                                    i = lenght_x;
-                                    j = lenght_y; 
+                                    i = length_x;
+                                    j = length_y; 
                                     break;
                                 }
                             }
                         }
-                        else if ((i == lenght_x - 1) && speedCheckBox.Checked)
+                        else if ((i == length_x - 1) && speedCheckBox.Checked)
                         {
                             maze[i, j].set_rank(0);
                             extra_lines++;
@@ -531,7 +534,7 @@ namespace Maze_SandBox
                 {
                     gen_complete = true;
                     if (animationCheckBox.Checked)
-                        draw_line(lenght_y - 1);
+                        draw_line(length_y - 1);
                 }
                 if (animationCheckBox.Checked)
                     draw_line(current_position.Y);
@@ -540,7 +543,7 @@ namespace Maze_SandBox
         
         private void Walking_Man(int delay = 0)
         {
-            Point[] Storage = new Point[lenght_x*lenght_y];
+            Point[] Storage = new Point[length_x*length_y];
             int length = 0;
             Random rnd = new Random();
             int step = 0;
@@ -582,7 +585,7 @@ namespace Maze_SandBox
                         ghost_step.X = current_position.X + step_maker[t].X;
                         ghost_step.Y = current_position.Y + step_maker[t].Y;
                         //if ghosted cell is outside of the maze - block this way
-                        if ((ghost_step.X < 0) || (ghost_step.X >= lenght_x) || (ghost_step.Y < 0) || (ghost_step.Y >= lenght_y))
+                        if ((ghost_step.X < 0) || (ghost_step.X >= length_x) || (ghost_step.Y < 0) || (ghost_step.Y >= length_y))
                             bit_counter[t] = 1;
                         else
                         {
@@ -666,7 +669,7 @@ namespace Maze_SandBox
 
         private void Growing_Tree(int delay = 0)
         {
-            Point[] Storage = new Point[lenght_x * lenght_y];
+            Point[] Storage = new Point[length_x * length_y];
             int length = 0;
             Random rnd = new Random();
             int step = 0;
@@ -696,7 +699,7 @@ namespace Maze_SandBox
                 {
                     ghost_step.X = current_position.X + step_maker[t].X;
                     ghost_step.Y = current_position.Y + step_maker[t].Y;
-                    if ((ghost_step.X < 0) || (ghost_step.X >= lenght_x) || (ghost_step.Y < 0) || (ghost_step.Y >= lenght_y))
+                    if ((ghost_step.X < 0) || (ghost_step.X >= length_x) || (ghost_step.Y < 0) || (ghost_step.Y >= length_y))
                         bit_counter[t] = 1;
                     else
                     {
@@ -818,7 +821,7 @@ namespace Maze_SandBox
                     {
                         ghost_step.X = current_position.X + step_maker[t].X;
                         ghost_step.Y = current_position.Y + step_maker[t].Y;
-                        if ((ghost_step.X < 0) || (ghost_step.X >= lenght_x) || (ghost_step.Y < 0) || (ghost_step.Y >= lenght_y))
+                        if ((ghost_step.X < 0) || (ghost_step.X >= length_x) || (ghost_step.Y < 0) || (ghost_step.Y >= length_y))
                             bit_counter[t] = 1;
                         else
                             if (maze[ghost_step.X, ghost_step.Y].visited)
@@ -845,7 +848,7 @@ namespace Maze_SandBox
                         {
                             ghost_step.X = current_position.X + step_maker[t].X;
                             ghost_step.Y = current_position.Y + step_maker[t].Y;
-                            if ((ghost_step.X >= 0) && (ghost_step.X < lenght_x) && (ghost_step.Y >= 0) && (ghost_step.Y < lenght_y) &&
+                            if ((ghost_step.X >= 0) && (ghost_step.X < length_x) && (ghost_step.Y >= 0) && (ghost_step.Y < length_y) &&
                                         maze[ghost_step.X, ghost_step.Y].visited && (ban_way != t))
                                 maze[current_position.X, current_position.Y].set_side(t);
                         }
@@ -870,6 +873,143 @@ namespace Maze_SandBox
             }
                 
             
+        }
+
+        private void Solve_Wave(int delay = 0)
+        {
+            wave[] legacy = new wave[1];
+            wave[] switcher; // ised to increase legacy.Length
+            wave add2legacy;
+            Point[] Storage = new Point[length_x * length_y];
+            int length = 0;
+            legacy[0] = new wave(current_position);
+            bool step_done = false;
+            int step;
+            Point ghost_step = new Point();
+            byte[] bit_counter = new byte[4];
+            int ban_way = 8; // first run - not banning any way
+            bool dead_end = false;
+            Random rnd = new Random();
+            int sum = 0;
+            int finder = -1;
+            while (true) // it will break as soon as "length" == 0
+            {
+                // --- Forking wave
+                dead_end = false;
+                while (!dead_end)
+                {
+                    System.Threading.Thread.Sleep(delay);
+
+                    if ((maze[current_position.X, current_position.Y].get_rank() != 2) && (maze[current_position.X, current_position.Y].get_rank() != 3))
+                        maze[current_position.X, current_position.Y].set_rank(4);
+                    
+                    bit_counter = new byte[4];
+                    if (animationCheckBox.Checked)
+                        draw_cell(current_position);
+                    sum = 0;
+                    for (int i = 0; i < 4; i++)
+                    {
+                        bit_counter[i] = maze[current_position.X, current_position.Y].get_side(i);
+                        if (bit_counter[i] != 1)
+                        {
+                            ghost_step.X = current_position.X + step_maker[i].X;
+                            ghost_step.Y = current_position.Y + step_maker[i].Y;
+                            step = maze[ghost_step.X, ghost_step.Y].get_rank(); // just didnt want to create new variable for this
+                            if ((step == 2) || (step == 4))
+                                bit_counter[i] = 1;
+                            if (maze[ghost_step.X, ghost_step.Y].get_side(all_steps[i + 2]) == 1)
+                                bit_counter[i] = 1; // This aint gonna happen, just making sure to cover it
+                            // "maze_update()" completely removes this situations
+                        }
+                        sum += bit_counter[i];
+                    }
+
+                    if (ban_way >= 0 && ban_way < 4)
+                    {
+                        bit_counter[ban_way] = 1;
+                        legacy[legacy.Length - 1].add(current_position);
+                        //sum++;
+                    }
+
+                    if (sum < 3)
+                        Storage[length++] = current_position;
+
+                    if (sum < 4)
+                    {
+                        step_done = false;
+                        while (!step_done)
+                        {
+                            step = rnd.Next(0, 4);
+                            if (bit_counter[step] != 1)
+                            {
+                                ghost_step.X = current_position.X + step_maker[step].X;
+                                ghost_step.Y = current_position.Y + step_maker[step].Y;
+                                sum = maze[ghost_step.X, ghost_step.Y].get_rank(); // just didnt want to create new variable for this
+                                if (sum == 3)
+                                {
+                                    current_position = ghost_step;
+                                    step_done = true;
+                                    ban_way = all_steps[step + 2];
+                                    legacy[legacy.Length - 1].winner = true;
+                                    legacy[legacy.Length - 1].add(current_position);
+                                    dead_end = true;
+                                }
+                                else
+                                {
+                                    current_position = ghost_step;
+                                    step_done = true;
+                                    ban_way = all_steps[step + 2];
+                                }
+                            }
+                        }
+                        if (animationCheckBox.Checked)
+                            draw_cell(current_position);
+                    }
+                    else
+                    {
+                        dead_end = true;
+                    }
+                }
+                // --- creating new wave
+                if (length == 0)
+                    break;
+                ban_way = 6;
+                current_position = Storage[length-- - 1];
+                add2legacy = null; // if something goes wrong - it will throw an error
+                for (int i = legacy.Length - 1; i >= 0; i--)
+                {
+                    finder = legacy[i].find_element(current_position);
+                    if (finder >= 0)
+                    {
+                        add2legacy = legacy[i];
+                        break;
+                    }
+                }
+                switcher = legacy;
+                legacy = new wave[switcher.Length + 1];
+                for (int i = 0; i < switcher.Length; i++)
+                    legacy[i] = switcher[i];
+                if (finder >= 0)
+                    legacy[switcher.Length] = new wave(add2legacy, finder);
+            }
+            // --- seacrhing for a shortes wave that hit exit cell
+            int min_length = length_x*length_y;
+            int min_index = -1;
+            for (int i = 0; i < legacy.Length; i++)
+            {
+                if (legacy[i].winner)
+                    if (legacy[i].get_length() < min_length)
+                    {
+                        min_length = legacy[i].get_length();
+                        min_index = i;
+                    }
+            }
+            for (int i = 0; i < min_length; i++)
+            {
+                current_position = legacy[min_index].get_element(i);
+                maze[current_position.X, current_position.Y].set_rank(5);
+                draw_cell(current_position);
+            }
         }
 
         private void Solve_Tremo(int delay = 0)
@@ -922,7 +1062,7 @@ namespace Maze_SandBox
                     {
                         ghost_step.X = current_position.X + step_maker[step].X; // ghost to the next cell
                         ghost_step.Y = current_position.Y + step_maker[step].Y; // and see if you crossed maze edge
-                        if ((ghost_step.X >= 0) && (ghost_step.X < lenght_x) && (ghost_step.Y >= 0) && (ghost_step.Y < lenght_y))
+                        if ((ghost_step.X >= 0) && (ghost_step.X < length_x) && (ghost_step.Y >= 0) && (ghost_step.Y < length_y))
                         {
                             if (maze[ghost_step.X, ghost_step.Y].get_side(all_steps[step + 2]) == 1)
                                 bit_counter[step] = 1; // if ghosted cell has this way wall blocked - block this way
@@ -1044,77 +1184,51 @@ namespace Maze_SandBox
 
     class wave
     {
-        bool winner = false;
-        int lenght = 0;
-        int[] legacy_x = new int[0];
-        int[] legacy_y = new int[0];
-        public wave(int x, int y)
+        public bool winner = false;
+        Point[] legacy;
+        public wave(Point position)
         {
-            if ((x >= 0) && (y >= 0))
-                add(x, y);
+            legacy = new Point[1];
+            if ((position.X >= 0) && (position.Y >= 0))
+                add(position);
             else
                 MessageBox.Show("Добаление отрицательного элемента в волну");
         }
-        public wave(wave source, int position)
+        public wave(wave source, int index)
         {
-            int len = source.get_lenght();
-            if (len != 0)
+            int length = source.get_length();
+            if (length != 0)
             {
-                int[] holder;
-                legacy_x = new int[position + 1];
-                legacy_y = new int[position + 1];
-                lenght = position + 1;
-                for (int i = 0; i <= position; i++)
-                {
-                    holder = source.get_element(i);
-                    legacy_x[i] = holder[0];
-                    legacy_y[i] = holder[1];
-                }
+                legacy = new Point[index + 1];
+                for (int i = 0; i <= index; i++)
+                    legacy[i] = source.get_element(i);
             }
         }
-        public int find_element(int x, int y)
+        public int find_element(Point position)
         {
-            for (int i = 0; i < lenght; i++)
+            for (int i = 0; i < legacy.Length; i++)
             {
-                if ((legacy_x[i] == x) && (legacy_y[i] == y))
+                if (legacy[i] == position)
                     return i;
             }
             return -1;
         }
-        public int get_lenght()
+        public int get_length()
         {
-            return lenght;
+            return legacy.Length;
         }
-        public void set_winner()
-        {
-            winner = true;
-        }
-        public bool get_winner()
-        {
-            return winner;
-        }
-        public int[] get_element(int position)
-        {
-            int[] result = new int[2];
-            result[0] = legacy_x[position];
-            result[1] = legacy_y[position];
-            return result;
-        }
-        public void add(int x, int y)
-        {
-            int[] temp = legacy_x;
-            legacy_x = new int[temp.Length + 1];
-            for (int i = 0; i < temp.Length; i++)
-                legacy_x[i] = temp[i];
-            legacy_x[temp.Length] = x;
 
-            temp = legacy_y;
-            legacy_y = new int[temp.Length + 1];
+        public Point get_element(int position)
+        {
+            return legacy[position];
+        }
+        public void add(Point position)
+        {
+            Point[] temp = legacy;
+            legacy = new Point[temp.Length + 1];
             for (int i = 0; i < temp.Length; i++)
-                legacy_y[i] = temp[i];
-            legacy_y[temp.Length] = y;
-
-            lenght++;
+                legacy[i] = temp[i];
+            legacy[temp.Length] = position;
         }
     }
 }
