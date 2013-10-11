@@ -99,14 +99,14 @@ namespace Maze_SandBox
                     filler = new SolidBrush(SetTransparency(64, Color.Green));
                     g.FillRectangle(filler, x + size / 2 - size / 4, y + size / 2 - size / 4, size / 2, size / 2);
                     break;
-                case 8: // Tremo <Spectral> solution levels
-                case 9: // Tremo <Classic> visited cell marker
+                case 8: // Tremo solution levels
+                case 9:
                 case 10:
                 case 11:
                     filler = new SolidBrush(SetTransparency(255 - 80*(rank - 8), Color.SkyBlue));
                     g.FillRectangle(filler, x + size / 2 - size / 4, y + size / 2 - size / 4, size / 2, size / 2);
                     break;
-                case 12:// Tremo <Spectral> Shortest path levels
+                case 12:// Tremo <Shortest path> Shortest path levels
                 case 13:
                 case 14:
                 case 15:
@@ -358,6 +358,8 @@ namespace Maze_SandBox
                     if (!animationCheckBox.Checked)
                         draw();
                     break;
+                case "Tremaux's solution":
+                    break;
             }
             timer.Stop();
             double disp = timer.ElapsedMilliseconds / 1000F;
@@ -379,6 +381,8 @@ namespace Maze_SandBox
                     optionsBox2.Items.Add("Shortest path");
                     optionsBox2.Items.Add("Classic");
                     optionsBox2.SelectedIndex = 0;
+                    break;
+                case "Tremaux's solution":
                     break;
             }
         }
@@ -1151,6 +1155,95 @@ namespace Maze_SandBox
                         current_position.Y = current_position.Y + step_maker[min_index].Y;
                     }
                 }
+            }
+        }
+
+        private void Solve_Tremaux(int delay = 0)
+        {
+            bool step_done = false;
+            bool exit_found = false;
+            int step;
+            Point ghost_step = new Point();
+            byte[] bit_counter = new byte[4];
+            int ban_way = 8; // first run - not banning any way
+            byte min_priority = 9;
+            while (!exit_found) // while exit is not found, Duh!
+            {
+                System.Threading.Thread.Sleep(delay);
+                step = maze[current_position.X, current_position.Y].get_rank();
+                if ((step != 2) && (step != 3))
+                    if (step == 8)
+                        maze[current_position.X, current_position.Y].set_rank(10);
+                    else
+                        maze[current_position.X, current_position.Y].set_rank(8);
+                if (animationCheckBox.Checked)
+                    draw_cell(current_position);
+
+                // VERY IMPORTANT! First time int this program im using 2 level blocks!
+                // if "bit_counter[i]" == 2 - this way is BLOCKED
+                // if "bit_counter[i]" == 1 - this way has LOW PRIORITY
+                // if "bit_counter[i]" == 0 - this way has HIGH PRIORITY
+                for (int i = 0; i < 4; i++)
+                {
+                    if (maze[current_position.X, current_position.Y].get_side(i) == 1)
+                        bit_counter[i] = 2;
+                    else
+                    {
+                        ghost_step.X = current_position.X + step_maker[i].X; // ghost to the next cell
+                        ghost_step.Y = current_position.Y + step_maker[i].Y; // and see if you crossed maze edge
+                        if ((ghost_step.X >= 0) && (ghost_step.X < length_x) && (ghost_step.Y >= 0) && (ghost_step.Y < length_y))
+                        {
+                            step = maze[ghost_step.X, ghost_step.Y].get_rank();
+                            if ((step == 2) || (step == 8)) // single visit
+                                bit_counter[i] = 1;
+                            else if (step == 10)            // multiple visitb
+                                bit_counter[i] = 2;
+                        }
+                    }
+                }
+
+                if (step == 3)      // "step" still hold the rank of the current cell
+                {                       // <if current position is exit cell>
+                    exit_found = true;  // this condition will never trigger
+                    break;              // because theres another exit cell
+                }                       // condition below
+
+                step_done = false;
+                
+                while (!step_done)
+                {
+                    if ((bit_counter[step] != 1)) // and see if its free
+                    {
+                        ghost_step.X = current_position.X + step_maker[step].X; // ghost to the next cell
+                        ghost_step.Y = current_position.Y + step_maker[step].Y; // and see if you crossed maze edge
+                        if ((ghost_step.X >= 0) && (ghost_step.X < length_x) && (ghost_step.Y >= 0) && (ghost_step.Y < length_y))
+                        {
+                            if (maze[ghost_step.X, ghost_step.Y].get_side(all_steps[step + 2]) == 1)
+                                bit_counter[step] = 1; // if ghosted cell has this way wall blocked - block this way
+                            // THIS AINT SUPPOSED TO HAPPEN, JUST IN CASE
+                            else if (maze[ghost_step.X, ghost_step.Y].get_rank() == 3) // if ghosted cell is the finish
+                            {
+                                current_position = ghost_step;
+                                step_done = true;
+                                ban_way = all_steps[step + 2];  // block the way back
+                                if (animationCheckBox.Checked)
+                                    draw_cell(current_position);
+                                exit_found = true;    //  indicates when maze is solved
+                            }
+                            else // if ghosted cell is free to go
+                            {
+                                current_position = ghost_step;
+                                step_done = true;
+                                ban_way = all_steps[step + 2]; // block the way back and repeat whole thing for the new position
+                            }
+                        }
+                    }
+                    if (!step_done)
+                        step = all_steps[step + 1];
+                }
+
+                if (animationCheckBox.Checked)
+                    draw_cell(current_position);
             }
         }
 }
