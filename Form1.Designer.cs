@@ -161,7 +161,8 @@
             this.solveBox.FormattingEnabled = true;
             this.solveBox.Items.AddRange(new object[] {
             "Wave solution",
-            "Tremo solution"});
+            "Tremo solution",
+            "Tremaux\'s solution"});
             this.solveBox.Location = new System.Drawing.Point(13, 309);
             this.solveBox.Name = "solveBox";
             this.solveBox.Size = new System.Drawing.Size(185, 21);
